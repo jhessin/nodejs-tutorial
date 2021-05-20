@@ -1,42 +1,85 @@
 /** @format */
 
 import http from 'http';
-import moment from 'moment';
+import request from 'request';
 
-const greeting = 'Zenva';
-function serverCallback(_req: http.RequestOptions, res: http.ServerResponse) {
-  const now = moment();
-  //const open = moment().hour(10).minute(0).second(0);
-  const open = moment('10', 'HH');
-  //const close = moment().hour(12).minute(0).second(0);
-  const close = moment('12', 'HH');
-  console.log(now.format());
-  console.log(`
-    now: ${now.format()}
-    open: ${open.format()}
-    close: ${close.format()}
-    `);
-  let msg = '';
-  if (now.isBetween(open, close)) {
-    msg = 'We are now open!';
-  } else if (now.isBefore(open)) {
-    msg = `Our business hours are from ${open.format(
-      'HH:mm',
-    )} to ${close.format('HH:mm')}
-    come back ${now.to(open)}.`;
-  } else {
-    msg = `Our business hours are from ${open.format(
-      'HH:mm',
-    )} to ${close.format('HH:mm')}
-    come back tomorrow.`;
+let request_body: any;
+
+function objToHTML(data: {}) {
+  let html = '';
+  for (const [key, value] of Object.entries(data)) {
+    html += `<td> ${key} </td>\n`;
+    if (Array.isArray(value)) {
+      html += `<td> ${arrToHTML(value)} </td>`;
+    } else if (typeof value === 'object') {
+      html += `<td> ${objToHTML(value)} </td>\n`;
+    } else {
+      html += `<td> ${value} </td>\n`;
+    }
   }
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(`
-    Hello ${greeting}!
-    Welcome to our page.
-    Now, it is ${now.format('h:mm a')}
-    ${msg}
-    `);
+  return html;
 }
 
-http.createServer(serverCallback).listen(8080);
+function arrToHTML(data: any[]) {
+  let html = '';
+  data.forEach(function (element) {
+    if (Array.isArray(element)) {
+      html += `<tr> ${arrToHTML(element)} </tr>\n`;
+    } else if (typeof element === 'object') {
+      html += `<tr> ${objToHTML(element)} </tr>\n`;
+    } else {
+      html += `<tr><td> ${element} </td></tr>\n`;
+    }
+  });
+
+  return html;
+}
+
+function toHTML(data: any) {
+  // Initialize the html sttring
+  let html = `
+  <html>
+  <head>
+  <title>Data aggregator</title>
+  </head>
+  <body>
+  <table>
+  `;
+
+  // test the type of data (Array or object)
+  if (Array.isArray(data)) {
+    html += `<tr> ${arrToHTML(data)} </tr>\n`;
+  } else if (typeof data === 'object') {
+    html += `<tr> ${objToHTML(data)} </tr>\n`;
+  } else {
+    html += `<tr><td> ${data} </td></tr>\n`;
+  }
+
+  // Close html
+  html += `</table></body></html>`;
+  return html;
+}
+
+request(
+  'https://www.bnefoodtrucks.com.au/api/1/trucks',
+  function (_err, _res, body) {
+    request_body = JSON.parse(body);
+    //console.log(toHTML(body));
+  },
+);
+
+http
+  .createServer(function (_req, res) {
+    if (request_body) {
+      res.writeHead(200, {
+        'Content-Type': 'text/html',
+      });
+      res.end(toHTML(request_body));
+    } else {
+      res.writeHead(200, {
+        'Content-Type': 'text/plain',
+      });
+      res.end('Nothing retrieved yet');
+    }
+  })
+  .listen(8080);
