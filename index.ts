@@ -4,7 +4,7 @@ import http from 'http';
 import moment from 'moment';
 
 const greeting = 'Zenva';
-function serverCallback(req: http.RequestOptions, res: http.ServerResponse) {
+function serverCallback(_req: http.RequestOptions, res: http.ServerResponse) {
   const now = moment();
   //const open = moment().hour(10).minute(0).second(0);
   const open = moment('10', 'HH');
