@@ -1,0 +1,13 @@
+{
+  "name": "nodejs-tutorial",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1"
+  },
+  "dependencies": {
+    "typescript": "^4.2.4"
+  }
+}
