@@ -911,6 +911,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"moment@npm:^2.29.1":
+  version: 2.29.1
+  resolution: "moment@npm:2.29.1"
+  checksum: 86729013febf7160de5b93da69273dd304d674b0224f9544b3abd09a87671ddd2cdd57598261ce57588910d63747ffd5590965e83c790d8bf327083c0e0a06e0
+  languageName: node
+  linkType: hard
+
 "node.extend@npm:^2.0.0":
   version: 2.0.2
   resolution: "node.extend@npm:2.0.2"
@@ -927,6 +934,7 @@ __metadata:
   dependencies:
     "@types/node": ^15.3.1
     "@yarnpkg/pnpify": ^3.0.0-rc.3
+    moment: ^2.29.1
     ts-node: ^9.1.1
     typescript: ^4.2.4
   languageName: unknown
